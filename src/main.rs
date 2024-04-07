@@ -26,7 +26,7 @@ impl EventHandler for Handler {
                 None => return,
             };
 
-            let user_mention = msg.mentions.iter().next();
+            let user_mention = msg.mentions.first();
 
             if let Some(user) = user_mention {
                 let member = match guild_id.member(&ctx.http, user).await {
@@ -52,10 +52,8 @@ impl EventHandler for Handler {
                     Err(why) => println!("Error sending message: {:?}", why),
                     Ok(_) => println!("Verified @{}", user.tag()),
                 }
-            } else {
-                if let Err(why) = msg.channel_id.say(&ctx.http, "No user mentioned").await {
-                    println!("Error sending message: {:?}", why);
-                }
+            } else if let Err(why) = msg.channel_id.say(&ctx.http, "No user mentioned").await {
+                println!("Error sending message: {:?}", why);
             }
         }
     }
